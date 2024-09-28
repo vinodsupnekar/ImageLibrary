@@ -7,16 +7,16 @@
 
 import Foundation
 
-struct EvetnItem {
+public struct EvetnItem: Decodable {
     let thumbnail: ThumbnailItem
 }
 
-struct ThumbnailItem {
+public struct ThumbnailItem: Decodable {
     let id: String
-    let version: Int
+    let version: Double
     let domain: String
     let basePath: String
     let key: String
     let qualities: [Int]
-    let aspectRatio: Int
+    let aspectRatio: Double
 }

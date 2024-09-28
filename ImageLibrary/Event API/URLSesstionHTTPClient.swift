@@ -1,0 +1,41 @@
+//
+//  Untitled.swift
+//  ImageLibrary
+//
+//  Created by Vinod.Supnekar on 28/09/24.
+//
+
+import Foundation
+
+public class URLSesstionHTTPClient: HTTPClient {
+    
+    private let session: URLSession
+    
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
+    
+    func get(from urlString: String,for page: Int, completion: @escaping (HTTPClient.Result) -> Void) {
+        
+        let url = urlAppending(from: urlString, for: page)
+        
+        session.dataTask(with: URLRequest(url: url)) { data, httpResponse, error in
+            
+            if let error {
+                return completion(.failure(error))
+            } else if let data = data,
+                      let response = httpResponse as? HTTPURLResponse {
+                return completion(.success((data, response)))
+            } else {
+                return completion(.failure(NSError(domain: "", code: 0)))
+            }
+        }.resume()
+    }
+    
+    func urlAppending(from urlString: String,for page: Int) -> URL {
+        
+        var urlComponents = URLComponents(string: urlString)!
+        urlComponents.queryItems = [URLQueryItem(name: "limit", value: "\(page * 10)")]
+        return urlComponents.url!
+    }
+}
