@@ -8,7 +8,7 @@ import ImageLibrary
 
 protocol ImageCollectionDelegate: AnyObject {
     
-    func onFetchCompleted(with data: [IndexPath])
+    func onFetchCompleted(with data: [IndexPath]?)
     func onFetchFailed(with error: Error)
 }
 
@@ -25,6 +25,18 @@ class ImageCollectionViewModel {
         self.delegate = delegate
     }
     
+    var page: Int {
+        return currentPage
+    }
+    
+    var currentCount: Int {
+        return events.count
+    }
+    
+    func event(at index: Int) -> EvetnItem {
+        return events[index]
+    }
+    
     func fetchImages() {
         
         client.loadEvent(with: currentPage) { [weak self] result in
@@ -39,10 +51,11 @@ class ImageCollectionViewModel {
                 let previousResult = self.events
                 self.events.append(contentsOf: result)
                 
+                var indexPathsToReload: [IndexPath]?
                 if  self.currentPage > 1 {
-                    let indexPathsToReload = self.calculateIndexPathsToReload(from: previousResult)
-                    self.delegate?.onFetchCompleted(with: indexPathsToReload)
+                    indexPathsToReload = self.calculateIndexPathsToReload(from: previousResult)
                 }
+                self.delegate?.onFetchCompleted(with: indexPathsToReload)
                 self.currentPage += 1
             case .error(let error):
                     self.delegate?.onFetchFailed(with: error)
