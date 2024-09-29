@@ -35,7 +35,7 @@ public class URLSesstionHTTPClient: HTTPClient {
     func urlAppending(from urlString: String,for page: Int) -> URL {
         
         var urlComponents = URLComponents(string: urlString)!
-        urlComponents.queryItems = [URLQueryItem(name: "limit", value: "\(page * 20)")]
+        urlComponents.queryItems = [URLQueryItem(name: "limit", value: "\(page * 50)")]
         return urlComponents.url!
     }
 }

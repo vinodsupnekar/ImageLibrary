@@ -8,31 +8,10 @@
 import UIKit
 import ImageLibrary
 
-class EventCell: UICollectionViewCell {
-    
-    @IBOutlet private var imageLabel: UILabel!
-    @IBOutlet private var imageView: UIImageView!
-    @IBOutlet private var indicatorView: UIActivityIndicatorView!
-
-    override class func awakeFromNib() {
-        super.awakeFromNib()
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        indicatorView.startAnimating()
-    }
-    
-    func configure(from cellMoel: EventCellViewModel) {
-        imageLabel.text = cellMoel.imageName
-        indicatorView.startAnimating()
-    }
-}
-
 class ViewController: UIViewController {
   
     @IBOutlet weak var collectionView: UICollectionView!
-    private var viewModel: ImageCollectionViewModel?
+    var viewModel: ImageCollectionViewModel?
     
     override func viewDidLoad() {
         
@@ -40,6 +19,7 @@ class ViewController: UIViewController {
 
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.prefetchDataSource = self
         
         let url = "https://acharyaprashant.org/api/v2/content/misc/media-coverages"
         let loader = RemoteEventLoader(url: url, client: URLSesstionHTTPClient())
@@ -59,14 +39,20 @@ extension ViewController : UICollectionViewDataSource {
      
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "EventCell", for: indexPath) as! EventCell
         
-        let cellModel = self.viewModel?.event(at: indexPath.row)
-        if let model = cellModel {
-            let imageURL =
-            "\(model.thumbnail.domain)/\(model.thumbnail.basePath)/0/\(model.thumbnail.key)"
-            
-            let modelItem = EventCellViewModel(imageName: model.thumbnail.id, imageUrl: imageURL)
-            cell.configure(from: modelItem)
-        }
+        if isLoadingCell(for: indexPath) {
+              cell.configure(with: .none)
+            } else {
+                let cellModel = self.viewModel?.event(at: indexPath.row)
+                if let model = cellModel {
+                    
+                    let imageURL =
+                    "\(model.thumbnail.domain)/\(model.thumbnail.basePath)/0/\(model.thumbnail.key)"
+                    let modelItem = EventCellViewModel(imageName: model.thumbnail.id, imageUrl: imageURL)
+                    cell.configure(with: modelItem)
+                }
+            }
+        
+       
         return cell
     }
 }
@@ -74,7 +60,15 @@ extension ViewController : UICollectionViewDataSource {
 extension ViewController: ImageCollectionDelegate {
     
     func onFetchCompleted(with data: [IndexPath]?) {
-        self.collectionView.reloadData()
+    
+        guard let newIndexesToReload = data else {
+            self.collectionView.isHidden = false
+            self.collectionView.reloadData()
+            return
+        }
+        
+        let indexs = visibleIndexPathsToReload(intersecting: newIndexesToReload)
+        collectionView.reloadItems(at: indexs)
     }
     
     func onFetchFailed(with error: any Error) {
@@ -86,7 +80,7 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        let numberOfCellsPerRow: CGFloat = 3
+        let numberOfCellsPerRow: CGFloat = 2
         let spacingBetweenCells: CGFloat = 3
 
         let totalSpacing = (numberOfCellsPerRow - 1) * spacingBetweenCells
@@ -103,5 +97,30 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 3
     }
+    
+}
+
+private extension ViewController {
+  func isLoadingCell(for indexPath: IndexPath) -> Bool {
+      return indexPath.row >= viewModel?.currentCount ?? 0
+  }
+
+  func visibleIndexPathsToReload(intersecting indexPaths: [IndexPath]) -> [IndexPath] {
+      let indexPathsForVisibleRows = collectionView.indexPathsForVisibleItems
+    let indexPathsIntersection = Set(indexPathsForVisibleRows).intersection(indexPaths)
+    return Array(indexPathsIntersection)
+  }
+}
+
+
+extension ViewController: UICollectionViewDataSourcePrefetching {
+    
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        
+        if  indexPaths.contains(where: isLoadingCell) {
+            viewModel?.fetchImages()
+        }
+    }
+    
     
 }
