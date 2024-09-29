@@ -7,6 +7,6 @@
 
 struct EventCellViewModel {
     
-    let imageName: String
+    let imageId: String
     let imageUrl: String
 }

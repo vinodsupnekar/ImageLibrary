@@ -12,6 +12,7 @@ class ViewController: UIViewController {
   
     @IBOutlet weak var collectionView: UICollectionView!
     var viewModel: ImageCollectionViewModel?
+    var tableCells: [EventCell] = []
     
     override func viewDidLoad() {
         
@@ -39,20 +40,25 @@ extension ViewController : UICollectionViewDataSource {
      
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "EventCell", for: indexPath) as! EventCell
         
+        
+        
         if isLoadingCell(for: indexPath) {
-              cell.configure(with: .none)
+            cell.configure(with: .none,
+                           imageLoader: .none)
             } else {
                 let cellModel = self.viewModel?.event(at: indexPath.row)
                 if let model = cellModel {
                     
                     let imageURL =
                     "\(model.thumbnail.domain)/\(model.thumbnail.basePath)/0/\(model.thumbnail.key)"
-                    let modelItem = EventCellViewModel(imageName: model.thumbnail.id, imageUrl: imageURL)
-                    cell.configure(with: modelItem)
+                    let modelItem = EventCellViewModel(imageId: model.thumbnail.id, imageUrl: imageURL)
+                    let client = URLSesstionHTTPClient()
+                    let loader = RemoteImageLoader(url: imageURL, client: client)
+                    cell.configure(with: modelItem,
+                                   imageLoader: loader)
                 }
             }
         
-       
         return cell
     }
 }
@@ -121,6 +127,21 @@ extension ViewController: UICollectionViewDataSourcePrefetching {
             viewModel?.fetchImages()
         }
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+//        let cell = collectionView.cellForItem(at: indexPath) as! EventCell
+//        cell.cancelImageLoadingTask()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
+        
+        indexPaths.forEach { indexPath in
+            let cell = collectionView.cellForItem(at: indexPath) as! EventCell
+            cell.cancelImageLoadingTask()
+        }
+    }
+
     
     
 }
