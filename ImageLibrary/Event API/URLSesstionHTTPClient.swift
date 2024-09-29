@@ -11,11 +11,11 @@ public class URLSesstionHTTPClient: HTTPClient {
     
     private let session: URLSession
     
-    init(session: URLSession = .shared) {
+    public init(session: URLSession = .shared) {
         self.session = session
     }
     
-    func get(from urlString: String,for page: Int, completion: @escaping (HTTPClient.Result) -> Void) {
+    public func get(from urlString: String,for page: Int, completion: @escaping (HTTPClient.Result) -> Void) {
         
         let url = urlAppending(from: urlString, for: page)
         
@@ -35,7 +35,7 @@ public class URLSesstionHTTPClient: HTTPClient {
     func urlAppending(from urlString: String,for page: Int) -> URL {
         
         var urlComponents = URLComponents(string: urlString)!
-        urlComponents.queryItems = [URLQueryItem(name: "limit", value: "\(page * 10)")]
+        urlComponents.queryItems = [URLQueryItem(name: "limit", value: "\(page * 20)")]
         return urlComponents.url!
     }
 }

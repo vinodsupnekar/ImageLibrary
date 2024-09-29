@@ -8,15 +8,15 @@
 import Foundation
 
 public struct EvetnItem: Decodable {
-    let thumbnail: ThumbnailItem
+    public let thumbnail: ThumbnailItem
 }
 
 public struct ThumbnailItem: Decodable {
-    let id: String
-    let version: Double
-    let domain: String
-    let basePath: String
-    let key: String
-    let qualities: [Int]
-    let aspectRatio: Double
+    public let id: String
+    public let version: Double
+    public let domain: String
+    public let basePath: String
+    public let key: String
+    public let qualities: [Int]
+    public let aspectRatio: Double
 }

@@ -5,7 +5,7 @@
 //  Created by Vinod.Supnekar on 28/09/24.
 //
 
-protocol HTTPClient {
+public protocol HTTPClient {
     
     typealias Result = Swift.Result<(Data, HTTPURLResponse), Error>
     

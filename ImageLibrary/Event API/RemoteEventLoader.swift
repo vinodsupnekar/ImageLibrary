@@ -7,9 +7,7 @@
 
 import Foundation
 
-
-
-class RemoteEventLoader: EventLoader {
+public class RemoteEventLoader: EventLoader {
     
     private let url: String
     private let client: HTTPClient
