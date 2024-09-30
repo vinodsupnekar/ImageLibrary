@@ -57,16 +57,13 @@ extension NSPersistentContainer {
     
     static func load(modelName name: String, url: URL, in bundle: Bundle) throws -> NSPersistentContainer {
                 
-        let momdName = "ImageModel" //pass this as a parameter
-        //...
-
+        let momdName = "ImageModel"
         guard let modelURL = Bundle(for: ConcreteFeedStore.self).url(forResource: momdName, withExtension:"momd") else {
                 fatalError("Error loading model from bundle")
         }
         guard let model = NSManagedObjectModel(contentsOf: modelURL) else {
             fatalError("Error initializing mom from: \(modelURL)")
         }
-        
         let descritption = NSPersistentStoreDescription(url: url)
         
         let container = NSPersistentContainer(name: name, managedObjectModel: model)
@@ -80,13 +77,5 @@ extension NSPersistentContainer {
             throw LoadingError.failedToLoadPersistentStore($0)
         }
         return container
-    }
-}
-
-extension NSManagedObjectModel {
-    static func with(name: String, in bundle: Bundle) -> NSManagedObjectModel? {
-        return bundle
-            .url(forResource: name, withExtension: "momd")
-            .flatMap { NSManagedObjectModel(contentsOf: $0) }
     }
 }

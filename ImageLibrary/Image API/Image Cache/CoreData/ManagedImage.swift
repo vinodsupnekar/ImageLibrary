@@ -21,7 +21,6 @@ extension ManagedImage {
         request.returnsObjectsAsFaults = false
         let predicate = NSPredicate(format: "id = %@", id)
         request.predicate = predicate
-        
         return try context.fetch(request).first
     }
     

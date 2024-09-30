@@ -11,7 +11,10 @@ import ImageLibrary
 class ViewController: UIViewController {
   
     @IBOutlet weak var collectionView: UICollectionView!
-    
+    @IBOutlet weak var lableNoNetwork: UILabel!
+    @IBOutlet weak var refreshView: UIButton!
+    @IBOutlet weak var refreshViewParent: UIStackView!
+
     var viewModel: ImageCollectionViewModel?
     var tableCells: [EventCell] = []
     lazy private var store: ConcreteFeedStore? = {
@@ -22,16 +25,26 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        self.navigationItem.title = "Image Library"
+        self.navigationItem.largeTitleDisplayMode = .always
 
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.prefetchDataSource = self
+        collectionView.isPrefetchingEnabled = true
         
         let url = "https://acharyaprashant.org/api/v2/content/misc/media-coverages"
         let loader = RemoteEventLoader(url: url, client: URLSesstionHTTPClient())
         self.viewModel = ImageCollectionViewModel(
             client: loader,
             delegate: self)
+        self.viewModel?.fetchImages()
+    }
+    
+    @IBAction func reloadView() {
+        
+        self.collectionView.isHidden = false
+        self.refreshViewParent.isHidden = true
         self.viewModel?.fetchImages()
     }
     
@@ -91,8 +104,10 @@ extension ViewController: ImageCollectionDelegate {
         collectionView.reloadItems(at: indexs)
     }
     
-    func onFetchFailed(with error: any Error) {
+    func onFetchFailed(with error: Error) {
         
+        self.collectionView.isHidden = true
+        self.refreshViewParent.isHidden = false
     }
 }
 
@@ -144,8 +159,18 @@ extension ViewController: UICollectionViewDataSourcePrefetching {
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
-//        let cell = collectionView.cellForItem(at: indexPath) as! EventCell
-//        cell.cancelImageLoadingTask()
+        let cell: EventCell? = cell as? EventCell
+        cell?.cancelImageLoadingTask()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+        cell.alpha = 0.0
+        UIView.animate(withDuration: 0.1) {
+            cell.alpha = 1.0
+        }
+        let cell: EventCell? = cell as? EventCell
+        cell?.fetchImage()
     }
     
     func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {

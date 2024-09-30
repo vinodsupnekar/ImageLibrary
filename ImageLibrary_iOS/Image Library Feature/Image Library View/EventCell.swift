@@ -11,12 +11,11 @@ import ImageLibrary
 
 class EventCell: UICollectionViewCell {
     
-    @IBOutlet private var imageLabel: UILabel!
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var indicatorView: UIActivityIndicatorView!
     private var cellMoel: EventCellViewModel?
     private var imageLoader: ImageLoader?
-    private var imageLoadingTask: ImageDataLoaderTask?
+    var imageLoadingTask: ImageDataLoaderTask?
     
     override class func awakeFromNib() {
         super.awakeFromNib()
@@ -33,28 +32,36 @@ class EventCell: UICollectionViewCell {
         self.imageLoader = imageLoader
         switch cellMoel {
         case .none:
-            indicatorView.startAnimating()
-        case .some(let model):
-            imageLabel.text = model.imageUrl
-            indicatorView.stopAnimating()
+            self.indicatorView.startAnimating()
+            self.indicatorView.isHidden = false
+        case .some(_):
+            self.indicatorView.stopAnimating()
+           break
+        }
+    }
+    
+    func fetchImage() {
+        if let model = cellMoel {
             imageLoadingTask = self.imageLoader?.loadImageData (
                 with: model.imageId,
                 from: model.imageUrl,
                 completion: { [weak self] result in
-                    self?.handle(result)
-            })
+                    DispatchQueue.main.async {
+                        self?.handle(result)
+                        self?.indicatorView.stopAnimating()
+                        self?.indicatorView.isHidden = true
+                    }
+                })
         }
     }
     
     func handle(_ result: ImageLoader.Result) {
         switch result {
         case .success(let data):
-            DispatchQueue.main.async {
                 self.imageView.contentMode = .scaleAspectFit
                 if data.count > 0 {
                     self.imageView.image = self.imageView.getCenterCropped(from: data)
                 }
-            }
             break
         case .failure:
             break
