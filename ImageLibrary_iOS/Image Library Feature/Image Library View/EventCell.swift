@@ -24,6 +24,7 @@ class EventCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         indicatorView.startAnimating()
+        self.imageView.image = UIImage(named: "no_image")
     }
     
     func configure(with cellMoel: EventCellViewModel?, imageLoader: ImageLoader?) {
@@ -64,6 +65,7 @@ class EventCell: UICollectionViewCell {
                 }
             break
         case .failure:
+            self.imageView.image = UIImage(named: "no_image")
             break
         }
     }

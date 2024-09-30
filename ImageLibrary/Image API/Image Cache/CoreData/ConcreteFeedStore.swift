@@ -14,7 +14,7 @@ public class ConcreteFeedStore: FeedStore {
     
     public init(storeURL: URL, bunle: Bundle = .main) throws {
         
-        self.container = try NSPersistentContainer.load(modelName: "ImageModel", url: storeURL, in: bunle)
+        self.container = try NSPersistentContainer.load(modelName: "ImageModel", url: storeURL)
         self.context = container.newBackgroundContext()
     }
     
@@ -55,10 +55,9 @@ extension NSPersistentContainer {
         case failedToLoadPersistentStore(Swift.Error)
     }
     
-    static func load(modelName name: String, url: URL, in bundle: Bundle) throws -> NSPersistentContainer {
+    static func load(modelName name: String, url: URL) throws -> NSPersistentContainer {
                 
-        let momdName = "ImageModel"
-        guard let modelURL = Bundle(for: ConcreteFeedStore.self).url(forResource: momdName, withExtension:"momd") else {
+        guard let modelURL = Bundle(for: ConcreteFeedStore.self).url(forResource: name, withExtension:"momd") else {
                 fatalError("Error loading model from bundle")
         }
         guard let model = NSManagedObjectModel(contentsOf: modelURL) else {
