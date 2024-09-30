@@ -109,11 +109,6 @@
 			path = ImageLibrary_iOSTests;
 			sourceTree = "<group>";
 		};
-		CE6F9B372CA7D8490035B8E5 /* ImageLibrary_iOSUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ImageLibrary_iOSUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,7 +158,6 @@
 				CE6F9B082CA7BE1D0035B8E5 /* ImageLibrary */,
 				CE6F9B162CA7D8410035B8E5 /* ImageLibrary_iOS */,
 				CE6F9B2D2CA7D8490035B8E5 /* ImageLibrary_iOSTests */,
-				CE6F9B372CA7D8490035B8E5 /* ImageLibrary_iOSUITests */,
 				CE6477FE2CA645BB00191E04 /* ImageLibraryTests */,
 				CE6F9B462CA7D8BD0035B8E5 /* Frameworks */,
 				CE6477F12CA645B800191E04 /* Products */,
@@ -307,9 +301,6 @@
 			);
 			dependencies = (
 				CE6F9B362CA7D8490035B8E5 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				CE6F9B372CA7D8490035B8E5 /* ImageLibrary_iOSUITests */,
 			);
 			name = ImageLibrary_iOSUITests;
 			packageProductDependencies = (

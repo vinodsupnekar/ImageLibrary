@@ -11,7 +11,7 @@ import XCTest
 
 class ImageLibraryTests: XCTestCase {
 
-     func test_loadEvents_loads_firstPage() async throws {
+     func test_loadEvents_loads_all_data() async throws {
         
         //Given
         let url = "https://acharyaprashant.org/api/v2/content/misc/media-coverages?limit=100"
@@ -27,7 +27,7 @@ class ImageLibraryTests: XCTestCase {
              case .success(let events):
                  
                  // Then
-                 XCTAssertEqual(events.count, 10)
+                 XCTAssertEqual(events.count, 100)
              case .error(let error):
                  XCTFail("failed with error \(error)")
              }
