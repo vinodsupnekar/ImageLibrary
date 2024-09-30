@@ -11,4 +11,4 @@ Following Features are covered inside Image Library:-
  
 4. I have used prefetching mechanism of Collectionview to make loading content into cells smoother.
 
-5. Unwanted api/disk calls are cancelled in not needed when view goes out of view of user.
+5. Unwanted backend api calls are cancelled in not needed when view goes out of view of user.
