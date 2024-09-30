@@ -50,10 +50,11 @@ class EventCell: UICollectionViewCell {
         switch result {
         case .success(let data):
             DispatchQueue.main.async {
-                self.imageView.image = UIImage(data: data)
+                self.imageView.contentMode = .scaleAspectFit
+                self.imageView.image = self.imageView.getCenterCropped(from: data)
             }
             break
-        case .failure(let failure):
+        case .failure:
             break
         }
     }
@@ -61,5 +62,33 @@ class EventCell: UICollectionViewCell {
     func cancelImageLoadingTask() {
         
         imageLoadingTask?.cancel()
+    }
+}
+
+private extension UIImageView {
+    
+    func getCenterCropped(from data: Data) -> UIImage {
+        let img = UIImage(data: data)!
+        let sideLength = min(
+            self.frame.size.width,
+            self.frame.size.height
+        )
+        
+        let sourceSize = img.size
+        let xOffset = (sourceSize.width ) / 2.0
+        let yOffset = (sourceSize.height) / 2.0
+
+        let cropRect = CGRect(
+            x: xOffset,
+            y: yOffset,
+            width: sideLength,
+            height: sideLength
+        ).integral
+        
+        let sourceCGImage = img.cgImage!
+        let croppedCGImage = sourceCGImage.cropping(
+            to: cropRect
+        )!
+        return UIImage(cgImage: croppedCGImage)
     }
 }

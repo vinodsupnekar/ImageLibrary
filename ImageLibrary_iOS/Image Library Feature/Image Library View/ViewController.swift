@@ -11,6 +11,7 @@ import ImageLibrary
 class ViewController: UIViewController {
   
     @IBOutlet weak var collectionView: UICollectionView!
+    
     var viewModel: ImageCollectionViewModel?
     var tableCells: [EventCell] = []
     
@@ -39,8 +40,6 @@ extension ViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
      
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "EventCell", for: indexPath) as! EventCell
-        
-        
         
         if isLoadingCell(for: indexPath) {
             cell.configure(with: .none,
@@ -86,22 +85,22 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        let numberOfCellsPerRow: CGFloat = 2
-        let spacingBetweenCells: CGFloat = 3
+        let numberOfCellsPerRow: CGFloat = 3
+        let spacingBetweenCells: CGFloat = 5
 
         let totalSpacing = (numberOfCellsPerRow - 1) * spacingBetweenCells
-        let availableWidth = collectionView.frame.width - totalSpacing
+        let availableWidth = collectionView.frame.width - totalSpacing - 10
         let cellWidth = availableWidth / numberOfCellsPerRow
 
         return CGSize(width: cellWidth, height: cellWidth)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 3
+        return 5
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 3
+        return 5
     }
     
 }
