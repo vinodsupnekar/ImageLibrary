@@ -14,6 +14,10 @@ class ViewController: UIViewController {
     
     var viewModel: ImageCollectionViewModel?
     var tableCells: [EventCell] = []
+    lazy private var store: ConcreteFeedStore? = {
+        let storeUrl = controllerSpecificStoreURL()
+        return try? ConcreteFeedStore(storeURL: storeUrl)
+    }()
     
     override func viewDidLoad() {
         
@@ -29,6 +33,14 @@ class ViewController: UIViewController {
             client: loader,
             delegate: self)
         self.viewModel?.fetchImages()
+    }
+    
+    private func controllerSpecificStoreURL() -> URL {
+        return cachesDirectory().appendingPathComponent("ImageModel.store")
+    }
+        
+    private func cachesDirectory() -> URL {
+        return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
 }
 
@@ -53,8 +65,11 @@ extension ViewController : UICollectionViewDataSource {
                     let modelItem = EventCellViewModel(imageId: model.thumbnail.id, imageUrl: imageURL)
                     let client = URLSesstionHTTPClient()
                     let loader = RemoteImageLoader(url: imageURL, client: client)
+                 
+                    let genericStore = ConcreteImageLoader(concreteFeedStore: store,
+                                                           remoteImageLoader: loader)
                     cell.configure(with: modelItem,
-                                   imageLoader: loader)
+                                   imageLoader: genericStore)
                 }
             }
         

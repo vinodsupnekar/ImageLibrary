@@ -35,8 +35,8 @@ public class RemoteImageLoader: ImageLoader {
         self.client = client
     }
     
-    public func loadImageData(with id: String, from url: String, completion: @escaping (ImageLoader.Result) -> Void) -> any ImageDataLoaderTask {
-        
+    public func loadImageData(with id: String, from url: String, completion: @escaping (ImageLoader.Result) -> Void)  -> (any ImageDataLoaderTask)? {
+
         let task: URLSessionDataTask = client.get(from: url) { [weak self] result in
             
             guard self != nil else {
@@ -44,7 +44,7 @@ public class RemoteImageLoader: ImageLoader {
             }
             
             switch result {
-            case .success((let data, let response)):
+            case .success((let data, _)):
                 completion(.success(data))
             case .failure:
                 completion(.failure(Error.connectivity))

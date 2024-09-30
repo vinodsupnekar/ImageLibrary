@@ -51,7 +51,9 @@ class EventCell: UICollectionViewCell {
         case .success(let data):
             DispatchQueue.main.async {
                 self.imageView.contentMode = .scaleAspectFit
-                self.imageView.image = self.imageView.getCenterCropped(from: data)
+                if data.count > 0 {
+                    self.imageView.image = self.imageView.getCenterCropped(from: data)
+                }
             }
             break
         case .failure:
