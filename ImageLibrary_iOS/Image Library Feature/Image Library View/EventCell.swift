@@ -8,7 +8,6 @@
 import UIKit
 import ImageLibrary
 
-
 class EventCell: UICollectionViewCell {
     
     @IBOutlet private var imageView: UIImageView!
@@ -23,12 +22,13 @@ class EventCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+       
         indicatorView.startAnimating()
-        self.imageView.image = UIImage(named: "no_image")
     }
     
     func configure(with cellMoel: EventCellViewModel?, imageLoader: ImageLoader?) {
-        
+        self.contentMode = .scaleAspectFit
+        self.imageView.contentMode = .scaleAspectFit
         self.cellMoel = cellMoel
         self.imageLoader = imageLoader
         switch cellMoel {
@@ -57,19 +57,19 @@ class EventCell: UICollectionViewCell {
     }
     
     func handle(_ result: ImageLoader.Result) {
+        self.imageView.contentMode = .scaleAspectFit
         switch result {
         case .success(let data):
-                self.imageView.contentMode = .scaleAspectFit
                 if data.count > 0 {
                     self.imageView.image = self.imageView.getCenterCropped(from: data)
                 }
             break
         case .failure:
-            self.imageView.image = UIImage(named: "no_image")
+            self.imageView.image =  self.imageView.getCropperImage(from: "no_image")
             break
         }
     }
-    
+
     func cancelImageLoadingTask() {
         
         imageLoadingTask?.cancel()
@@ -92,6 +92,27 @@ private extension UIImageView {
         let cropRect = CGRect(
             x: xOffset,
             y: yOffset,
+            width: sideLength,
+            height: sideLength
+        ).integral
+        
+        let sourceCGImage = img.cgImage!
+        let croppedCGImage = sourceCGImage.cropping(
+            to: cropRect
+        )!
+        return UIImage(cgImage: croppedCGImage)
+    }
+    
+    func getCropperImage(from image: String) -> UIImage {
+        let img =  UIImage(named: image)!
+        let sideLength = min(
+            self.frame.width,
+            self.frame.height
+        )
+        
+        let cropRect = CGRect(
+            x: 0,
+            y: 0,
             width: sideLength,
             height: sideLength
         ).integral
